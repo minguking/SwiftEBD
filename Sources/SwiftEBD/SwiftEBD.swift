@@ -14,22 +14,28 @@ public protocol EyeBlinkDetectorDelegate: AnyObject {
 
 public class EyeBlinkDetector: NSObject, ARSessionDelegate {
     
-    /// determine if user's device supports Face Tracking feature
+    /// Determines if the user's device supports the Face Tracking feature.
     public static var isSupported: Bool {
         return ARFaceTrackingConfiguration.isSupported
     }
     
-    /// stores last blink time to calculate cool down period
+    /// Stores the last detected blink time to calculate the cooldown period.
     private var lastBlinkTime: Date?
     
-    /// Once detected, iit won't detect during this cool down period. Default is 1.0 second
+    /// Once a blink is detected, it will not be detected again during this cooldown period. Default value is 1.0 second.
     public let blinkCoolDown: TimeInterval
     
-    /// If too sensitive, it might detect anomaly
+    /**
+     Sensitivity threshold for detecting a blink.
+     
+     - 0.5 ~ 0.6: Recommended range. Detects natural blinks while ignoring half-closed eyes.
+     - 0.3 ~ 0.4: More sensitive. Detects even slight or partial blinks, but may increase false positives.
+     - 0.7 or higher: Requires stronger eye closure. Users may feel their blinks are not being detected.
+     */
     public let sensitivity: Float
     
-    /// Whether to detect both eye close or not
-    public let ignoreWhenBothEyeClosed: Bool
+    /// Whether blinks with both eyes closed should be detected.
+    public let detectBothEyeClosed: Bool
     
     private let session = ARSession()
     
@@ -38,11 +44,11 @@ public class EyeBlinkDetector: NSObject, ARSessionDelegate {
     public init(
         blinkCoolDown: TimeInterval = 1.0,
         sensitivity: Float = 0.6,
-        ignoreWhenBothEyeClosed: Bool
+        detectBothEyeClosed: Bool
     ) {
         self.blinkCoolDown = blinkCoolDown
         self.sensitivity = sensitivity
-        self.ignoreWhenBothEyeClosed = ignoreWhenBothEyeClosed
+        self.detectBothEyeClosed = detectBothEyeClosed
         super.init()
         session.delegate = self
     }
@@ -59,14 +65,14 @@ public class EyeBlinkDetector: NSObject, ARSessionDelegate {
     func handleBlink(leftClosed: Bool, rightClosed: Bool) {
         let now = Date()
         
-        /// ignore during cool time period
+        /// Ignore detection during the cooldown period.
         if let lastTime = lastBlinkTime, now.timeIntervalSince(lastTime) < blinkCoolDown {
             return
         }
         
-        /// Both eyes blink
+        /// Both eyes closed (blink).
         if leftClosed && rightClosed {
-            if ignoreWhenBothEyeClosed {
+            if !detectBothEyeClosed {
                 return
             } else {
                 delegate?.blinkDetected(side: .both)
@@ -75,14 +81,14 @@ public class EyeBlinkDetector: NSObject, ARSessionDelegate {
             }
         }
         
-        /// Left eye blink
+        /// Left eye closed (blink).
         if leftClosed && !rightClosed {
             delegate?.blinkDetected(side: .left)
             lastBlinkTime = now
             return
         }
         
-        /// Right eye blink
+        /// Right eye closed (blink).
         if rightClosed && !leftClosed {
             delegate?.blinkDetected(side: .right)
             lastBlinkTime = now
@@ -93,7 +99,7 @@ public class EyeBlinkDetector: NSObject, ARSessionDelegate {
     public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         guard let faceAnchor = anchors.compactMap({ $0 as? ARFaceAnchor }).first else { return }
         
-        /// it uses front camera, so left and right are reversed.
+        /// Uses the front camera, so left and right are mirrored.
         let leftClosed = isEyeClosed(.eyeBlinkRight, from: faceAnchor)
         let rightClosed = isEyeClosed(.eyeBlinkLeft, from: faceAnchor)
         
