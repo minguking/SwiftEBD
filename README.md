@@ -15,6 +15,7 @@ It lets you detect left, right, or both eye blinks with customizable sensitivity
   <key>NSCameraUsageDescription</key>
   <string>This app uses the front camera for eye blink detection.</string>
   ```
+---
 
 ## Features
 
