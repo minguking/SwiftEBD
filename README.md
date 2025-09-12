@@ -1,4 +1,4 @@
-# SwiftEBD
+# SwiftEBD: Eye Blink Detector
 
 A lightweight Swift library for detecting **eye blinks** using ARKit’s face tracking.  
 It lets you detect left, right, or both eye blinks with customizable sensitivity and cooldown.
