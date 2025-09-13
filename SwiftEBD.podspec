@@ -1,6 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SwiftEBD'
+  s.swift_versions   = ['5.0']
   s.version          = '1.1.0'
   s.summary          = 'Eye Blink Detector for Swift using ARKit'
   s.description      = <<-DESC
