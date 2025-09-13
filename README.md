@@ -50,6 +50,28 @@ dependencies: [
 ]
 ```
 
+### Carthage
+Add the following line to your **Cartfile**:
+```bash
+github "minguking/SwiftEBD"
+```
+Then run:
+
+```bash
+carthage update
+```
+And link the built framework to your project.
+
+### CocoaPods
+Add the following line to your Podfile:
+```bash
+pod 'SwiftEBD'
+```
+
+Then run:
+```bash
+pod install
+```
 ---
 
 ## Usage
