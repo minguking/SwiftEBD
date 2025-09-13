@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
     It is useful for accessibility features, gesture-based controls, and AR interactions.
   DESC
   s.homepage         = 'https://github.com/minguking/SwiftEBD'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
+  s.license          = { :type => 'MIT', :file => 'LICENSE.md' }
   s.author           = { 'minguking' => 'minqu.kang@gmail.com' }
   s.source           = { :git => 'https://github.com/minguking/SwiftEBD.git', :tag => s.version.to_s }
   s.platform         = :ios, '13.0'
